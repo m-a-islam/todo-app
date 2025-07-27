@@ -47,8 +47,7 @@ jobs:
       - name: Run Backend Unit Tests
         working-directory: ./backend
         run: |
-          cp .env.prod .env.test
-          sed -i 's/APP_ENV=prod/APP_ENV=test/' .env.test
+          cp .env.prod .env
           vendor/bin/phpunit
 
       # --- CD (Continuous Deployment) Steps ---
