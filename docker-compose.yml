@@ -48,7 +48,7 @@ services:
 
   # Service 4: The Vue.js Frontend Dev Server
   frontend:
-    image: node:18-alpine
+    image: node:20-alpine
     container_name: todo-frontend
     working_dir: /app
     ports:
@@ -58,7 +58,7 @@ services:
       # Mount your local frontend code into the container
       - ./frontend:/app
     # Command to install dependencies (if not already there) and run the dev server
-    command: sh -c "npm install && npm run dev -- --host"
+    command: sh -c "npm install && npm run dev"
 
 # Define the named volume for persisting database data
 volumes:
