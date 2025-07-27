@@ -27,10 +27,6 @@ final class TodoController extends AbstractController
                 'isCompleted' => $todo->isCompleted(), // 'make:entity' creates a getter named isIsCompleted() for a boolean
             ];
         }
-
-        // The 'json()' method is a shortcut to create a JsonResponse
-        // It automatically converts the PHP objects to a JSON array
-
         return $this->json($data);
     }
 
@@ -43,7 +39,7 @@ final class TodoController extends AbstractController
         }
         $todo = new Todo();
         $todo->setTitle($data['title']);
-        $todo->setIsCompleted($data['isCompleted'] ?? false); // Default to
+        $todo->setIsCompleted($data['isCompleted'] ?? false); // Default to false if not provided
         $em->persist($todo);
         $em->flush();
         return $this->json([
@@ -51,5 +47,22 @@ final class TodoController extends AbstractController
             'title' => $todo->getTitle(),
             'isCompleted' => $todo->isCompleted(),
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/todos/{id}', name: 'api_todos_update', methods: ['PUT'])]
+    public function update(Request $request, Todo $todo, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data['title'])) {
+            return $this->json(['error' => 'Title is required'], Response::HTTP_BAD_REQUEST);
+        }
+        $todo->setTitle($data['title']);
+        $em->flush();
+        return $this->json([
+            'id' => $todo->getId(),
+            'title' => $todo->getTitle(),
+            'isCompleted' => $todo->isCompleted(),
+        ]);
     }
 }
