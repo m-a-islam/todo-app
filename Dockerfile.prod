@@ -23,7 +23,7 @@ RUN composer install --no-dev --optimize-autoloader
 
 # --- Final Stage: Production Image ---
 # Start from a lean Nginx image with PHP-FPM.
-FROM trafex/php-nginx:latest-php82
+FROM trafex/php-nginx:latest
 # This image contains Nginx and PHP-FPM configured to work together.
 
 # Copy the built frontend assets from the 'frontend-builder' stage
