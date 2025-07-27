@@ -36,7 +36,7 @@ COPY --from=frontend-builder /app/dist /app/public
 COPY --from=backend-builder /app /app
 
 # Set correct permissions for Symfony's cache and logs.
-RUN chown -R www-data:www-data /app/var
+RUN chown -R nginx:nginx /app/var
 
 # Note: The base image trafex/php-nginx is already configured to
 # point Nginx to the /app/public directory and handle .php files.
