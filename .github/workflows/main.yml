@@ -45,10 +45,15 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader -d ./backend
 
       - name: Run Backend Unit Tests
-        working-directory: ./backend
         run: |
-          cp .env.prod .env
-          vendor/bin/phpunit
+          # Create a .env.test file for the test run
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/todo_db_test?serverVersion=8.0" > backend/.env.test
+          
+          # Run Migrations on the test DB
+          php backend/bin/console doctrine:migrations:migrate --env=test --no-interaction
+          
+          # Run the tests
+          ./backend/vendor/bin/phpunit -c backend/phpunit.xml.dist
 
       # --- CD (Continuous Deployment) Steps ---
       # These steps will only run if we push to the 'main' branch, not on pull requests.
