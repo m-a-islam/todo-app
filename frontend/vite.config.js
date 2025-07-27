@@ -36,5 +36,11 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  test: {
+    // Enable the DOM API for testing components
+    environment: 'jsdom',
+    // Make test utils like 'describe' and 'it' available globally
+    globals: true,
   }
 })

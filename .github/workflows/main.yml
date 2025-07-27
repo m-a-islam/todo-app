@@ -30,6 +30,9 @@ jobs:
           npm install --legacy-peer-deps
           npm run lint # This will fail the build if there are linting errors.
 
+      - name: Run Frontend Unit Tests
+        run: npm test --prefix frontend
+
       - name: Build Frontend for Production
         run: npm run build --prefix frontend
 
@@ -40,6 +43,12 @@ jobs:
 
       - name: Install Backend Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --no-dev --optimize-autoloader -d ./backend
+
+      - name: Run Backend Unit Tests
+        run: |
+          cp backend/.env.prod backend/.env.test
+          sed -i 's/APP_ENV=prod/APP_ENV=test/' backend/.env.test
+          php ./backend/bin/phpunit
 
       # --- CD (Continuous Deployment) Steps ---
       # These steps will only run if we push to the 'main' branch, not on pull requests.

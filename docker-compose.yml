@@ -31,6 +31,8 @@ services:
       # This is how Symfony connects to the database.
       # Note we use the service name 'db' as the host.
       DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=8.0"
+      TEST_DATABASE_URL: "mysql://root:root@db:3306/${MYSQL_DATABASE}?serverVersion=8.0"
+
 
   # Service 3: The Nginx Web Server
   webserver:
