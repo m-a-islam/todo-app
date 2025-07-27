@@ -25,15 +25,16 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # --- Final Stage: Production Image ---
 # Start from a lean Nginx image with PHP-FPM.
-FROM trafex/php-nginx:latest
+FROM trafex/php-nginx:1.0.1-php82
 # This image contains Nginx and PHP-FPM configured to work together.
+
+COPY --from=backend-builder /app .
 
 # Copy the built frontend assets from the 'frontend-builder' stage
 # into the Nginx public directory.
 COPY --from=frontend-builder /app/dist /app/public
+RUN ls -la /app
 
-# Copy the Symfony application code from the 'backend-builder' stage.
-COPY --from=backend-builder /app /app
 
 # Set correct permissions for Symfony's cache and logs.
 RUN chown -R nginx:nginx /app/var
