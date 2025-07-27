@@ -65,4 +65,25 @@ final class TodoController extends AbstractController
             'isCompleted' => $todo->isCompleted(),
         ]);
     }
+
+    #[Route('/todos/{id}/toggle', name: 'api_todos_toggle_status', methods: ['PUT'])]
+    public function toggleStatus(Todo $todo, EntityManagerInterface $em): JsonResponse
+    {
+        $todo->setIsCompleted(!$todo->isCompleted());
+        $em->flush();
+        return $this->json([
+            'id' => $todo->getId(),
+            'title' => $todo->getTitle(),
+            'isCompleted' => $todo->isCompleted(),
+        ]);
+    }
+
+    #[Route('/todos/{id}', name: 'api_todos_delete', methods: ['DELETE'])]
+    public function delete(Todo $todo, EntityManagerInterface $em): JsonResponse
+    {
+        $em->remove($todo);
+        $em->flush();
+        return $this->json(['message' => 'Todo deleted successfully'], Response::HTTP_NO_CONTENT);
+
+    }
 }

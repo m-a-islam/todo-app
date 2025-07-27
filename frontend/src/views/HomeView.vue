@@ -78,6 +78,45 @@ const saveEdit = async (todo) => {
     console.error('Error updating todo:', error)
   }
 }
+const toggleStatus = async (todo) => {
+  try {
+    const response = await fetch(`/api/todos/${todo.id}/toggle`, {
+      method: 'PUT',
+    });
+    if (!response.ok) throw new Error('Failed to toggle status');
+
+    const updatedTodo = await response.json();
+    const index = todos.value.findIndex(t => t.id === updatedTodo.id);
+    if (index !== -1) {
+      // Replace the old item with the updated one from the server
+      todos.value[index] = updatedTodo;
+    }
+  } catch (error) {
+    console.error('Error toggling status:', error);
+  }
+};
+
+
+const deleteTodo = async (todoToDelete) => {
+  // It's good practice to confirm a destructive action
+  if (!confirm(`Are you sure you want to delete "${todoToDelete.title}"?`)) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/todos/${todoToDelete.id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete todo');
+
+    // On success, remove the item from our local list for an instant UI update.
+    // The .filter() method creates a new array containing only the items that pass the test.
+    todos.value = todos.value.filter(t => t.id !== todoToDelete.id);
+
+  } catch (error) {
+    console.error('Error deleting todo:', error);
+  }
+};
 
 // 'onMounted' is a lifecycle hook that runs once the component
 // is added to the page. It's the perfect place to fetch data.
@@ -104,8 +143,18 @@ onMounted(() => {
 
         <!-- NORMAL DISPLAY VIEW (v-else) -->
         <div v-else class="display-item">
-          <span>{{ todo.title }} - {{ todo.isCompleted ? 'Done' : 'Pending' }}</span>
-          <button @click="startEditing(todo)" class="btn-edit">Edit</button>
+          <input
+            type="checkbox"
+            :checked="todo.isCompleted"
+            @change="toggleStatus(todo)"
+            class="status-checkbox"
+          />
+          <span class="todo-title">{{ todo.title }}</span>
+          <div class="actions">
+            <button @click="startEditing(todo)" class="btn-edit">Edit</button>
+            <!-- NEW: Delete button -->
+            <button @click="deleteTodo(todo)" class="btn-delete">Delete</button>
+          </div>
         </div>
       </li>
     </ul>
@@ -128,23 +177,44 @@ li {
   padding: 1rem;
   margin-bottom: 0.5rem;
   border-radius: 5px;
+  transition: background-color 0.3s;
+}
+/* NEW: Style for completed items */
+li.is-completed {
+  background-color: #e0f2f1;
+}
+li.is-completed .todo-title {
+  text-decoration: line-through;
+  color: #777;
 }
 .display-item, .editing-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+}
+.todo-title {
+  flex-grow: 1;
+}
+.status-checkbox {
+  transform: scale(1.5);
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
 }
 .editing-item input {
   flex-grow: 1;
-  margin-right: 1rem;
 }
-.btn-edit, .btn-save, .btn-cancel {
+.btn-edit, .btn-save, .btn-cancel, .btn-delete {
   border: none;
   padding: 0.5rem;
   border-radius: 4px;
   cursor: pointer;
+  color: white;
 }
-.btn-edit { background-color: #f0ad4e; color: white; }
-.btn-save { background-color: #5cb85c; color: white; }
-.btn-cancel { background-color: #777; color: white; }
+.btn-edit { background-color: #f0ad4e; }
+.btn-save { background-color: #5cb85c; }
+.btn-cancel { background-color: #777; }
+.btn-delete { background-color: #d9534f; }
 </style>
