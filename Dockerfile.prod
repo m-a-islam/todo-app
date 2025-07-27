@@ -17,8 +17,10 @@ RUN npm run build
 FROM composer:2.7 AS backend-builder
 WORKDIR /app
 COPY backend/ /app/
+
+COPY backend/.env.prod /app/.env
 # Install production dependencies only, and optimize the autoloader.
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 
 # --- Final Stage: Production Image ---

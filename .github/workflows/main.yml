@@ -27,7 +27,7 @@ jobs:
       - name: Install Frontend Dependencies & Lint
         run: |
           cd frontend
-          npm install
+          npm install --legacy-peer-deps
           npm run lint # This will fail the build if there are linting errors.
 
       - name: Build Frontend for Production
