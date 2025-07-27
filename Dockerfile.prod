@@ -15,7 +15,7 @@ COPY backend/ /app/
 COPY backend/.env.prod /app/.env
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Result is in /app
-RUN ls -la /app
+#RUN ls -la /app
 
 # --- Final Stage: Production Image ---
 FROM trafex/php-nginx:latest
@@ -28,7 +28,7 @@ COPY --from=backend-builder /app /app
 
 # Now, overwrite the /app/public directory with our compiled frontend assets.
 COPY --from=frontend-builder /app/dist /app/public
-
+RUN mkdir -p /app/var/cache /app/var/log
 # Set correct permissions for Symfony's cache and logs.
 # This will now work because the COPY command above brought in the /app/var directory.
 RUN chown -R nginx:nginx /app/var
