@@ -10,7 +10,9 @@ RUN apk add --no-cache git icu-dev icu-data-full zip unzip
 
 # Install PHP extensions that Symfony commonly needs
 # pdo_mysql for database access, intl for internationalization, opcache for performance
-RUN docker-php-ext-install pdo_mysql intl opcache
+RUN docker-php-ext-install pdo_mysql intl opcache \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
 # Get the latest version of Composer, the PHP package manager
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

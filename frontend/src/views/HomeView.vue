@@ -1,34 +1,62 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import TodoForm from "@/components/TodoForm.vue";
 
 // Create a reactive variable to hold our list of todos.
 // 'ref' makes it reactive, so Vue updates the page when it changes.
 const todos = ref([])
 const isLoading = ref(true)
 
-// 'onMounted' is a lifecycle hook that runs once the component
-// is added to the page. It's the perfect place to fetch data.
-onMounted(async () => {
-  try {
-    // Use the browser's fetch API to call our backend.
-    // The Vite proxy will forward this to http://webserver:80/todos
+const fetchTodos = async () => {
+  try{
     const response = await fetch('/api/todos')
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
     // Update our reactive variable with the data from the API
     todos.value = await response.json()
-  } catch (error) {
-    console.error('Failed to fetch todos:', error)
+  } catch (error){
+
   } finally {
     isLoading.value = false
   }
+}
+
+// 2. Define a function to add a new todo item
+const handleNewTodo = async (newTitle) => {
+  try {
+    const response = await fetch('/api/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ title: newTitle }),
+    })
+
+    if (!response.ok) throw new Error('Failed to add todo')
+
+    // The API returns the new todo object, so we can add it
+    // directly to our list for an instant UI update!
+    const newTodo = await response.json()
+    todos.value.push(newTodo)
+
+  } catch (error) {
+    console.error('Error adding todo:', error)
+  }
+}
+
+// 'onMounted' is a lifecycle hook that runs once the component
+// is added to the page. It's the perfect place to fetch data.
+onMounted(() => {
+  fetchTodos()
 })
 </script>
 
 <template>
   <main>
     <h1>My To-Do List</h1>
+    <TodoForm @add-todo="handleNewTodo" />
+
     <div v-if="isLoading">Loading...</div>
     <ul v-else-if="todos.length > 0">
       <!-- Loop through each 'todo' in our 'todos' array -->
