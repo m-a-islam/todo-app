@@ -15,7 +15,7 @@ COPY backend/ /app/
 COPY backend/.env.prod /app/.env
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Result is in /app
-
+RUN ls -la /app
 
 # --- Final Stage: Production Image ---
 FROM trafex/php-nginx:latest
