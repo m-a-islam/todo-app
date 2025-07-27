@@ -48,7 +48,7 @@ jobs:
         run: |
           cp backend/.env.prod backend/.env.test
           sed -i 's/APP_ENV=prod/APP_ENV=test/' backend/.env.test
-          php ./backend/bin/phpunit
+          ./backend/vendor/bin/phpunit
 
       # --- CD (Continuous Deployment) Steps ---
       # These steps will only run if we push to the 'main' branch, not on pull requests.
