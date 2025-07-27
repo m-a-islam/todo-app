@@ -45,10 +45,11 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader -d ./backend
 
       - name: Run Backend Unit Tests
+        working-directory: ./backend
         run: |
-          cp backend/.env.prod backend/.env.test
-          sed -i 's/APP_ENV=prod/APP_ENV=test/' backend/.env.test
-          ./backend/vendor/bin/phpunit -c backend/phpunit.xml.dist
+          cp .env.prod .env.test
+          sed -i 's/APP_ENV=prod/APP_ENV=test/' .env.test
+          vendor/bin/phpunit
 
       # --- CD (Continuous Deployment) Steps ---
       # These steps will only run if we push to the 'main' branch, not on pull requests.
