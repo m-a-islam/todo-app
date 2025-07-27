@@ -28,7 +28,14 @@ COPY --from=backend-builder /app /app
 
 # Now, overwrite the /app/public directory with our compiled frontend assets.
 COPY --from=frontend-builder /app/dist /app/public
+USER root
+
+# Step 2: Create the directory as root. This will now succeed.
 RUN mkdir -p /app/var/cache /app/var/log
-# Set correct permissions for Symfony's cache and logs.
-# This will now work because the COPY command above brought in the /app/var directory.
+
+# Step 3: Change the ownership of the new directory to the nginx user.
 RUN chown -R nginx:nginx /app/var
+
+# Step 4: Switch back to the non-privileged nginx user for security.
+# This ensures the application runs without root privileges.
+USER nginx
